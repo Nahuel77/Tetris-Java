@@ -7,27 +7,27 @@ public class BolsaPiezas {
             {1,1,1}
     };
     private static final int[][] FORMA_I = {
-            {1,1,1,1}
+            {2,2,2,2}
     };
     private static final int[][] FORMA_L = {
-            {0,0,1},
-            {1,1,1}
+            {0,0,3},
+            {3,3,3}
     };
     private static final int[][] FORMA_J = {
-            {1,0,0},
-            {1,1,1}
+            {4,0,0},
+            {4,4,4}
     };
     private static final int[][] FORMA_O = {
-            {1,1},
-            {1,1}
+            {5,5},
+            {5,5}
     };
     private static final int[][] FORMA_S = {
-            {0,1,1},
-            {1,1,0}
+            {0,6,6},
+            {6,6,0}
     };
     private static final int[][] FORMA_Z = {
-            {1,1,0},
-            {0,1,1}
+            {7,7,0},
+            {0,7,7}
     };
 
     public static Pieza crearPiezaAleatoria(){

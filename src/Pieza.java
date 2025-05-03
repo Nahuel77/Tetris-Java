@@ -12,6 +12,13 @@ public class Pieza {
         this.columna = 4;
     }
 
+    public Pieza(Pieza otra) {
+        this.forma = Rotador.clonarMatriz(otra.forma);
+        this.fila = otra.fila;
+        this.columna = otra.columna;
+        this.color = otra.color;
+    }
+
     public int[][] getForma(){
         return forma;
     }
@@ -34,6 +41,10 @@ public class Pieza {
 
     public void moverAbajo() {
         fila++;
+    }
+
+    public void moverArriba(){
+        fila--;
     }
 
     public void moverIzquierda() {

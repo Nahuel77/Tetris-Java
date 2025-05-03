@@ -15,7 +15,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
     public GamePanel() {
         tablero = new Tablero();
         setPreferredSize(new Dimension(Tablero.COLUMNS * TILE_SIZE, Tablero.ROWS * TILE_SIZE));
-        setBackground(Color.BLACK);
+        setBackground(Color.DARK_GRAY);
         setFocusable(true);
         addKeyListener(this);
 
@@ -26,27 +26,39 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+        dibujarTablero(g);
+        dibujarPiezaActual(g);
+    }
 
-        //plantear la posibilidad de implementar clase de diagrama y control de tablero
-        // y a su vez dibujado, tdo en uno
+    private void dibujarTablero(Graphics g) {
+        Color[][] matriz = tablero.getMatriz();
 
-        for (int r = 0; r < Tablero.ROWS; r++) {
-            for (int c = 0; c < Tablero.COLUMNS; c++) {
-                    g.setColor(Color.DARK_GRAY);
-                    g.drawRect(c * TILE_SIZE, r * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+        for (int i = 0; i < Tablero.ROWS; i++) {
+            for (int j = 0; j < Tablero.COLUMNS; j++) {
+                g.setColor(Color.GRAY);
+                g.drawRect(j * TILE_SIZE, i * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+
+                if (matriz[i][j] != null) {
+                    g.setColor(matriz[i][j]);
+                    g.fillRect(j * TILE_SIZE, i * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                    g.setColor(Color.BLACK);
+                    g.drawRect(j * TILE_SIZE, i * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                }
             }
         }
+    }
 
-        //Cuadrado, aqui implementar llamado de piezas
+    private void dibujarPiezaActual(Graphics g) {
         int[][] forma = piezaActual.getForma();
-        g.setColor(piezaActual.getColor());
-
         for (int i = 0; i < forma.length; i++) {
             for (int j = 0; j < forma[i].length; j++) {
-                if (forma[i][j] == 1) {
+                if (forma[i][j] != 0) {
                     int x = (piezaActual.getColumna() + j) * TILE_SIZE;
                     int y = (piezaActual.getFila() + i) * TILE_SIZE;
+                    g.setColor(piezaActual.getColor());
                     g.fillRect(x, y, TILE_SIZE, TILE_SIZE);
+                    g.setColor(Color.BLACK);
+                    g.drawRect(x, y, TILE_SIZE, TILE_SIZE);
                 }
             }
         }
@@ -54,16 +66,16 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        //todo: agregar if que detenga la pieza en colision con mapa o piezas ubicadas
-        // y dispare el guardado de la pieza en el mapeo
-
-
-        int[][] forma = piezaActual.getForma();
-        if (piezaActual.getFila() >= Tablero.ROWS-forma.length) {//todo: error de fondo
-            piezaActual = BolsaPiezas.crearPiezaAleatoria();
+        piezaActual.moverAbajo();
+        tablero.eliminarFilasCompletas();
+        if (tablero.colisiona(piezaActual)) {
+            piezaActual.moverArriba();
             tablero.colocarPieza(piezaActual);
-        }else{
-            piezaActual.moverAbajo();
+            piezaActual = BolsaPiezas.crearPiezaAleatoria();
+            if (tablero.colisiona(piezaActual)) {
+                timer.stop();
+                JOptionPane.showMessageDialog(this, "Game Over");
+            }
         }
         repaint();
     }
@@ -71,23 +83,27 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
     @Override
     public void keyPressed(KeyEvent e){
         int key = e.getKeyCode();
-        int[][] forma = piezaActual.getForma();
+        Pieza copia = new Pieza(piezaActual); // ← Clonar pieza
 
-        if (key == KeyEvent.VK_LEFT) {
-            if(piezaActual.getColumna()>0){
-                piezaActual.moverIzquierda();
-            }
-        } else if (key == KeyEvent.VK_RIGHT) {
-            if(piezaActual.getColumna() < (Tablero.COLUMNS-forma[0].length)) {
-                piezaActual.moverDerecha();
-            }
-        } else if (key == KeyEvent.VK_DOWN) {
-            piezaActual.moverAbajo();
-        } else if (key == KeyEvent.VK_SPACE) {
-            piezaActual.rotar();
+        switch (key) {
+            case KeyEvent.VK_LEFT:
+                copia.moverIzquierda();
+                break;
+            case KeyEvent.VK_RIGHT:
+                copia.moverDerecha();
+                break;
+            case KeyEvent.VK_DOWN:
+                copia.moverAbajo();
+                break;
+            case KeyEvent.VK_SPACE:
+                copia.rotar();
+                break;
         }
 
-        repaint();
+        if (!tablero.colisiona(copia)) {
+            piezaActual = copia;
+            repaint();
+        }
     }
     @Override public void keyReleased(KeyEvent e) {}
     @Override public void keyTyped(KeyEvent e) {}

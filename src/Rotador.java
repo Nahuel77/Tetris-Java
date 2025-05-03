@@ -30,6 +30,14 @@ public class Rotador {
         return inversa;
     }
 
+    public static int[][] clonarMatriz(int[][] matriz) {
+        int[][] copia = new int[matriz.length][];
+        for (int i = 0; i < matriz.length; i++) {
+            copia[i] = matriz[i].clone();
+        }
+        return copia;
+    }
+
     public static int[][] rotarMatriz(int[][] matriz){
         int[][] matrizRotada = transponerMatriz(matriz);
         matrizRotada = invertirMatriz(matrizRotada);
