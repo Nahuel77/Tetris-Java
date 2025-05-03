@@ -23,7 +23,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
         setFocusable(true);
         addKeyListener(this);
 
-        timer = new Timer(500, this);
+        timer = new Timer(1000, this);
         timer.start();
     }
 
@@ -55,11 +55,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        pieceRow++;
-
-        if (pieceRow >= ROWS) {
-            pieceRow = 0;
-        }
+        piezaActual.moverAbajo();
         repaint();
     }
 
