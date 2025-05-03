@@ -10,9 +10,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
     private final int ROWS = 20;
     private final int COLS = 10;
     private Pieza piezaActual = BolsaPiezas.crearPiezaAleatoria();
-
-    private int pieceRow = 0;//posicion inicial de la pieza
-    private int pieceCol = 4;
+    //private int[][] forma = piezaActual.getForma();
 
     private Timer timer;
 
@@ -31,6 +29,8 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
+        //plantear la posibilidad de implementar clase de diagrama y control de tablero
+        // y a su vez dibujado, todo en uno
         g.setColor(Color.DARK_GRAY);
         for (int r = 0; r < ROWS; r++) {
             for (int c = 0; c < COLS; c++) {
@@ -56,17 +56,26 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         piezaActual.moverAbajo();
+        int[][] forma = piezaActual.getForma();
+        if (piezaActual.getFila() > ROWS-forma.length) {
+            piezaActual = BolsaPiezas.crearPiezaAleatoria();
+        }
         repaint();
     }
 
     @Override
     public void keyPressed(KeyEvent e){
         int key = e.getKeyCode();
+        int[][] forma = piezaActual.getForma();
 
         if (key == KeyEvent.VK_LEFT) {
-            piezaActual.moverIzquierda();
+            if(piezaActual.getColumna()>0){
+                piezaActual.moverIzquierda();
+            }
         } else if (key == KeyEvent.VK_RIGHT) {
-            piezaActual.moverDerecha();
+            if(piezaActual.getColumna() < (COLS-forma[0].length)) {
+                piezaActual.moverDerecha();
+            }
         } else if (key == KeyEvent.VK_DOWN) {
             piezaActual.moverAbajo();
         } else if (key == KeyEvent.VK_SPACE) {
