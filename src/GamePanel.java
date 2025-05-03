@@ -7,17 +7,15 @@ import java.awt.event.KeyListener;
 
 public class GamePanel extends JPanel implements ActionListener, KeyListener {
     private final int TILE_SIZE = 30;
-    private final int ROWS = 20;
-    private final int COLS = 10;
     private Pieza piezaActual = BolsaPiezas.crearPiezaAleatoria();
-    //private int[][] forma = piezaActual.getForma();
+    private Tablero tablero;
 
     private Timer timer;
 
     public GamePanel() {
-        setPreferredSize(new Dimension(COLS * TILE_SIZE, ROWS * TILE_SIZE));
+        tablero = new Tablero();
+        setPreferredSize(new Dimension(Tablero.COLUMNS * TILE_SIZE, Tablero.ROWS * TILE_SIZE));
         setBackground(Color.BLACK);
-
         setFocusable(true);
         addKeyListener(this);
 
@@ -30,11 +28,12 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
         super.paintComponent(g);
 
         //plantear la posibilidad de implementar clase de diagrama y control de tablero
-        // y a su vez dibujado, todo en uno
-        g.setColor(Color.DARK_GRAY);
-        for (int r = 0; r < ROWS; r++) {
-            for (int c = 0; c < COLS; c++) {
-                g.drawRect(c * TILE_SIZE, r * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+        // y a su vez dibujado, tdo en uno
+
+        for (int r = 0; r < Tablero.ROWS; r++) {
+            for (int c = 0; c < Tablero.COLUMNS; c++) {
+                    g.setColor(Color.DARK_GRAY);
+                    g.drawRect(c * TILE_SIZE, r * TILE_SIZE, TILE_SIZE, TILE_SIZE);
             }
         }
 
@@ -55,10 +54,16 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        piezaActual.moverAbajo();
+        //todo: agregar if que detenga la pieza en colision con mapa o piezas ubicadas
+        // y dispare el guardado de la pieza en el mapeo
+
+
         int[][] forma = piezaActual.getForma();
-        if (piezaActual.getFila() > ROWS-forma.length) {
+        if (piezaActual.getFila() >= Tablero.ROWS-forma.length) {//todo: error de fondo
             piezaActual = BolsaPiezas.crearPiezaAleatoria();
+            tablero.colocarPieza(piezaActual);
+        }else{
+            piezaActual.moverAbajo();
         }
         repaint();
     }
@@ -73,7 +78,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
                 piezaActual.moverIzquierda();
             }
         } else if (key == KeyEvent.VK_RIGHT) {
-            if(piezaActual.getColumna() < (COLS-forma[0].length)) {
+            if(piezaActual.getColumna() < (Tablero.COLUMNS-forma[0].length)) {
                 piezaActual.moverDerecha();
             }
         } else if (key == KeyEvent.VK_DOWN) {
